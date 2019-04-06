@@ -1,0 +1,15 @@
+my:
+    name: brandon
+    age: 12
+    number: ${random.int}
+    uuid: ${random.int}
+    greeting: hi i,m ${my.name}
+spring:
+  profiles:
+    active: test
+
+  datasource:
+    username: root
+    password: 000000
+    url: jdbc:mysql://localhost:3306/test
+    driver-class-name: com.mysql.jdbc.Driver
