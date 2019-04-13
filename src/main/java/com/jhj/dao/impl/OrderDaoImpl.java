@@ -231,4 +231,15 @@ public class OrderDaoImpl implements OrderDao {
         jdbcTemplate.update(sql,orderId);
         return true;
     }
+
+    @Override
+    public void deleteOrderBySupplier(long supplierid,long buyid) {
+
+        String sql1 = "delete from t_order_detail where order_id in (select order_id from t_order_info where supplier_id = ? and buyer_id=?)";
+        String sql2 = "delete from t_order_info where supplier_id = ? and buyer_id=?";
+
+
+        jdbcTemplate.update(sql1,supplierid,buyid);
+        jdbcTemplate.update(sql2,supplierid,buyid);
+    }
 }

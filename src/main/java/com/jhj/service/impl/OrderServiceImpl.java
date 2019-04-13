@@ -227,6 +227,11 @@ public class OrderServiceImpl implements OrderService {
         return false;
     }
 
+    @Override
+    public void deleteOrderBySupplier(long supplierid,long buyid) {
+        orderDao.deleteOrderBySupplier(supplierid,buyid);
+    }
+
     /**
      * 直接查库
      * @param orderId

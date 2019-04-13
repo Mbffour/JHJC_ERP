@@ -5,6 +5,7 @@ import com.jhj.comm.*;
 import com.jhj.pojo.user.Supplier;
 import com.jhj.pojo.user.UserInfo;
 import com.jhj.interceptors.ResponseUtil;
+import com.jhj.service.OrderService;
 import com.jhj.service.UserService;
 import com.jhj.token.RSAUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +24,10 @@ public class UserController {
 
     @Autowired
     UserService userService;
+
+
+    @Autowired
+    OrderService orderService;
 
 
     @RequestMapping(value = "/login",method = RequestMethod.POST)
@@ -135,6 +140,11 @@ public class UserController {
 
 
             if(userService.deleteSupplier(uuid)){
+
+                //会删除所有订单ß
+                orderService.deleteOrderBySupplier(uuid,user.getUuid());
+
+
                return ResponseUtil.genResponse(ERROR_CODE_TYPE.SUCCESS,uuid);
             }
 

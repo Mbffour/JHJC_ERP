@@ -58,4 +58,7 @@ public interface OrderService {
     List<Detail> getAllOrderDetail(long orderId);
 
     boolean updateOrderDetails(long orderId, List<Detail> updateList);
+
+    void deleteOrderBySupplier(long supplierid,long buyid);
+
 }

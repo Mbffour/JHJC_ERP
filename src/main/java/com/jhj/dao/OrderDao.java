@@ -35,4 +35,6 @@ public interface OrderDao {
     void setOrderDetailState(long detailId);
 
     boolean deleteAllOrderDetail(long orderId);
+
+    void deleteOrderBySupplier(long supplierid,long buyid);
 }
