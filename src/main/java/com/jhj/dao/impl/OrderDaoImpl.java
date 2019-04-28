@@ -63,18 +63,45 @@ public class OrderDaoImpl implements OrderDao {
 
 
     @Override
-    public List<Long> getAllOrderID(Long uuid,boolean bBuyer,Long supplierId) {
+    public List<Long> getAllOrderID(Long uuid,boolean bBuyer,Long supplierId,Integer orderType) {
         String sql = "select order_id from t_order_info ";
         Object[] objects;
 
         if(bBuyer){
-            sql +="where buyer_id=?";
+            sql +="where buyer_id=? and order_status<5";
         }else{
-            sql +="where supplier_id=? and order_status>0";
+            sql +="where supplier_id=? and order_status>0 ";
         }
 
         if(supplierId!=null){
             sql += " and supplier_id=?";
+            objects=new Object[]{uuid,supplierId};
+        }else{
+            objects=new Object[]{uuid};
+        }
+
+        List<Long> query = jdbcTemplate.query(sql, objects, new LongMapper("order_id"));
+        return query;
+    }
+
+    @Override
+    public List<Long> getAllEndOrderID(Long uuid, boolean bBuyer, Long supplierId) {
+        String sql = "select order_id from t_order_info ";
+        Object[] objects;
+
+        if(bBuyer){
+            sql +="where buyer_id=? and order_status=5";
+        }else{
+            sql +="where supplier_id=? and order_status=5 ";
+        }
+
+        if(supplierId!=null){
+
+            if(bBuyer){
+                sql += " and supplier_id=?";
+            }else{
+                sql += " and buyer_id=?";
+            }
             objects=new Object[]{uuid,supplierId};
         }else{
             objects=new Object[]{uuid};
@@ -163,7 +190,7 @@ public class OrderDaoImpl implements OrderDao {
     @Override
     public boolean createOrderDetails(long orderId, final List<Detail> list) {
 
-        String sql = "insert into t_order_detail(order_id,expectNum,actualNum,expect_time,state) values(?,?,?,?,?) on duplicate key update id=?,order_id=?,expectNum=?,actualNum=?,expect_time=?";
+        String sql = "insert into t_order_detail(order_id,expectNum,actualNum,expect_time,state) values(?,?,?,?,?) on duplicate key update order_id=?,expectNum=?,actualNum=?,expect_time=?";
 
         try{
             int[] ints = jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
@@ -175,11 +202,15 @@ public class OrderDaoImpl implements OrderDao {
                     ps.setLong(4, list.get(i).getTime());
                     ps.setLong(5, list.get(i).getState());
 
-                    ps.setLong(6, list.get(i).getId());
-                    ps.setLong(7, list.get(i).getOrderId());
-                    ps.setLong(8, list.get(i).getExpectNum());
-                    ps.setLong(9, list.get(i).getActualNum());
-                    ps.setLong(10, list.get(i).getTime());
+                    ps.setLong(6, list.get(i).getOrderId());
+                    ps.setLong(7, list.get(i).getExpectNum());
+                    ps.setLong(8, list.get(i).getActualNum());
+                    ps.setLong(9, list.get(i).getTime());
+//                    ps.setLong(6, list.get(i).getId());
+//                    ps.setLong(7, list.get(i).getOrderId());
+//                    ps.setLong(8, list.get(i).getExpectNum());
+//                    ps.setLong(9, list.get(i).getActualNum());
+//                    ps.setLong(10, list.get(i).getTime());
                 }
 
                 @Override
@@ -228,6 +259,13 @@ public class OrderDaoImpl implements OrderDao {
     @Override
     public boolean deleteAllOrderDetail(long orderId) {
         String sql = "delete from t_order_detail  where order_id = ? and state=1";
+        jdbcTemplate.update(sql,orderId);
+        return true;
+    }
+
+    @Override
+    public boolean deleteOrderDetail(long orderId) {
+        String sql = "delete from t_order_detail  where order_id = ?";
         jdbcTemplate.update(sql,orderId);
         return true;
     }

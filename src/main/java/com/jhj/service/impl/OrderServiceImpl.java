@@ -108,14 +108,19 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public PageModel getOrderByPage(Long uuid, int limit, int page,boolean bBuyer,Long supplierId) {
+    public PageModel getOrderByPage(Long uuid, int limit, int page,boolean bBuyer,Long supplierId,Integer orderType) {
 
         //计算
         int start = limit*(page-1);
 
         //1 查所有userid
 
-        List<Long> allIds = orderDao.getAllOrderID(uuid,bBuyer,supplierId);
+        List<Long> allIds = null;
+        if(orderType!=null){
+            allIds = orderDao.getAllEndOrderID(uuid,bBuyer,supplierId);
+        }else{
+            allIds = orderDao.getAllOrderID(uuid,bBuyer,supplierId,orderType);
+        }
 
         if(allIds==null&&allIds.size()==0)
             return null;
@@ -230,6 +235,11 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public void deleteOrderBySupplier(long supplierid,long buyid) {
         orderDao.deleteOrderBySupplier(supplierid,buyid);
+    }
+
+    @Override
+    public void deleteOrderDetail(long orderId) {
+        orderDao.deleteOrderDetail(orderId);
     }
 
     /**

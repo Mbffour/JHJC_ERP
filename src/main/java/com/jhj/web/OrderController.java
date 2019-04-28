@@ -76,12 +76,18 @@ public class OrderController {
 
         int page,limit;
         Long type =null;
+        Integer orderType=null;
         try{
             page = Integer.parseInt(map.get("page"));
             limit = Integer.parseInt(map.get("limit"));
             String stype = map.get("type");
             if(stype!=null&&!stype.equals("")){
                 type=Long.parseLong(stype);
+            }
+            String orderState = map.get("orderState");
+
+            if(orderState!=null&&!orderState.equals("")){
+                orderType=Integer.parseInt(orderState);
             }
 
         }catch (Exception e){
@@ -95,7 +101,7 @@ public class OrderController {
         if(Utils.checkAuth(user.getRoles(),RoleEnum.BUYER)) bBuyer =true;
 
 
-        PageModel data = orderService.getOrderByPage(user.getUuid(),limit,page,bBuyer,type);
+        PageModel data = orderService.getOrderByPage(user.getUuid(),limit,page,bBuyer,type,orderType);
 
 
 
@@ -427,8 +433,8 @@ public class OrderController {
                 dataList.add(detail);
             }
 
-            if(totalNum>orderInfo.getNeedNum())
-                return ResponseUtil.genResponse(ERROR_CODE_TYPE.ILLEGAL_PARAMETER,"超过订购数量");
+//            if(totalNum>orderInfo.getNeedNum())
+//                return ResponseUtil.genResponse(ERROR_CODE_TYPE.ILLEGAL_PARAMETER,"超过订购数量");
 
             if(orderService.updateOrderDetails(orderId, dataList)){
                 orderInfo.setUndoNum(orderInfo.getNeedNum()-totalNum);
@@ -544,6 +550,73 @@ public class OrderController {
 
 
 
+
+
+    @RequestMapping(value = "/back/send",method = RequestMethod.POST)
+    @ResponseBody
+    public Map backDetailSend(@RequestBody Map<String, String> map, HttpServletRequest request) {
+        String token = request.getHeader("Token");
+        UserInfo user = CacheManager.getInstance().AUTH_CACHE.getIfPresent(token);
+        if(user==null&&user.getUuid()<=0)ResponseUtil.genResponse(ERROR_CODE_TYPE.ILLEGAL_TOKEN);
+        if(!Utils.checkAuth(user.getRoles(),RoleEnum.BUYER))return  ResponseUtil.genResponse(ERROR_CODE_TYPE.ILLEGAL_AUTH);
+
+
+        long orderId=0;
+        try{
+            orderId = Long.parseLong(map.get("orderId"));
+        }catch (Exception e){
+            e.printStackTrace();
+            return ResponseUtil.genResponse(ERROR_CODE_TYPE.ILLEGAL_PARAMETER);
+        }
+
+
+        OrderInfo orderInfo = orderService.getOrderInfo(orderId);
+
+        if(orderInfo==null||orderInfo.getOrderStat()!=OrderState.DETAIL)
+            return ResponseUtil.genResponse(ERROR_CODE_TYPE.ORDER_CHANGE);
+
+        if(orderService.setOrderStatus(orderId, OrderState.CONFIRM)) {
+            orderService.deleteOrderDetail(orderId);
+
+            return ResponseUtil.genResponse(ERROR_CODE_TYPE.SUCCESS);
+        }
+        else
+            return  ResponseUtil.genResponse(ERROR_CODE_TYPE.UNKNOWN);
+
+
+    }
+
+
+    @RequestMapping(value = "/end",method = RequestMethod.POST)
+    @ResponseBody
+    public Map endDetailSend(@RequestBody Map<String, String> map, HttpServletRequest request) {
+        String token = request.getHeader("Token");
+        UserInfo user = CacheManager.getInstance().AUTH_CACHE.getIfPresent(token);
+        if(user==null&&user.getUuid()<=0)ResponseUtil.genResponse(ERROR_CODE_TYPE.ILLEGAL_TOKEN);
+        if(!Utils.checkAuth(user.getRoles(),RoleEnum.BUYER))return  ResponseUtil.genResponse(ERROR_CODE_TYPE.ILLEGAL_AUTH);
+
+
+        long orderId=0;
+        try{
+            orderId = Long.parseLong(map.get("orderId"));
+        }catch (Exception e){
+            e.printStackTrace();
+            return ResponseUtil.genResponse(ERROR_CODE_TYPE.ILLEGAL_PARAMETER);
+        }
+
+
+        OrderInfo orderInfo = orderService.getOrderInfo(orderId);
+
+        if(orderInfo==null||orderInfo.getOrderStat()!=OrderState.CREATED)
+            return ResponseUtil.genResponse(ERROR_CODE_TYPE.ORDER_CHANGE);
+
+        if(orderService.setOrderStatus(orderId, OrderState.FINISH))
+            return ResponseUtil.genResponse(ERROR_CODE_TYPE.SUCCESS);
+        else
+            return  ResponseUtil.genResponse(ERROR_CODE_TYPE.UNKNOWN);
+
+
+    }
 
     @RequestMapping(value = "/confirm/send",method = RequestMethod.POST)
     @ResponseBody

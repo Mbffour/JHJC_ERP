@@ -10,7 +10,9 @@ public interface OrderDao {
 
     Long createOrder(OrderInfo orderInfo);
 
-    List<Long> getAllOrderID(Long uuid,boolean bBuyer,Long supplierId);
+    List<Long> getAllOrderID(Long uuid,boolean bBuyer,Long supplierId,Integer orderType);
+
+    List<Long> getAllEndOrderID(Long uuid, boolean bBuyer, Long supplierId);
 
     List<OrderInfo> getOrderByIds(List<Long> targerIds);
 
@@ -36,5 +38,8 @@ public interface OrderDao {
 
     boolean deleteAllOrderDetail(long orderId);
 
+    boolean deleteOrderDetail(long orderId);
+
     void deleteOrderBySupplier(long supplierid,long buyid);
+
 }

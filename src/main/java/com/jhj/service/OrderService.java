@@ -41,7 +41,7 @@ public interface OrderService {
 
 
     //分页订单
-    PageModel getOrderByPage(Long uuid, int limit, int page,boolean bBuyer,Long supplierId);
+    PageModel getOrderByPage(Long uuid, int limit, int page,boolean bBuyer,Long supplierId,Integer orderType);
 
     boolean setOrderStatus(long orderId, int confirm);
 
@@ -61,4 +61,5 @@ public interface OrderService {
 
     void deleteOrderBySupplier(long supplierid,long buyid);
 
+    void deleteOrderDetail(long orderId);
 }
