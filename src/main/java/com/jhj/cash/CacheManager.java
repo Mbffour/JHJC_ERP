@@ -11,7 +11,6 @@ public class CacheManager {
     private static  CacheManager instance;
 
 
-    private int a ;
     private CacheManager() {}
 
     public static CacheManager getInstance() {
