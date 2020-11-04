@@ -7,7 +7,7 @@ my:
 spring:
   profiles:
     active: test
-
+111111111111111111111111111111111111111
   datasource:
     username: root
     password: 000000
