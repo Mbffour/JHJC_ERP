@@ -13,15 +13,6 @@ public class CacheManager {
 
     private CacheManager() {}
 
-    public static CacheManager getInstance() {
-        if(instance == null) {
-            synchronized (CacheManager.class) {
-                instance = new CacheManager();
-            }
-        }
-        return instance;
-    }
-
     // 用户信息
     public Cache<String, UserInfo> AUTH_CACHE = CacheBuilder.newBuilder().maximumSize(8000l).expireAfterAccess(1800l, TimeUnit.SECONDS)
             .expireAfterWrite(1, TimeUnit.DAYS).removalListener(new AuthCacheRemovalListener()).recordStats().build();
