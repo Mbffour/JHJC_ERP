@@ -11,12 +11,18 @@ public class CacheManager {
     private static  CacheManager instance;
 
 
+    private int a ;
     private CacheManager() {}
 
     public static CacheManager getInstance() {
         if(instance == null) {
             synchronized (CacheManager.class) {
                 instance = new CacheManager();
+                sdasadsad
+
+                        sadsadsad
+
+                        sadsadsad
             }
         }
         return instance;
