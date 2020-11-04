@@ -20,6 +20,13 @@ public class CacheManager {
             }
         }
         return instance;
+
+
+
+
+
+
+
     }
 
     // 用户信息

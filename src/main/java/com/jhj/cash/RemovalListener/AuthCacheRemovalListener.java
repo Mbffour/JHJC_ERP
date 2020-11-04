@@ -10,6 +10,20 @@ public class AuthCacheRemovalListener implements RemovalListener<String, UserInf
 
 	private static final Logger logger = Logger.getLogger("business");
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   @Override
   public void onRemoval(RemovalNotification<String, UserInfo> notification) {
 	  //获取当前移除的token
